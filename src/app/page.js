@@ -1,95 +1,91 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  `${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`
+);
+
+export default function Page() {
+  const handleButtonClick = async () => {
+    const response = await fetch("/api/stripe", {
+      method: "POST",
+      headers: {
+        "Context-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: 200 * 1000,
+        customer: cardInfo.customer,
+        paymentMethodId: cardInfo.id,
+        currency: "usd",
+      }),
+    });
+
+    console.log(response);
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+    <Elements stripe={stripePromise}>
+      <div className="app">
+        <h1>Apple Mac Laptop</h1>
+        <div className="product">
+          <img src="/assets/laptop.jpg" alt="laptop image" />
+          <p>Applce Silicon Laptop, 8GB RAM, 256GB SSD</p>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <div className="button">
+          <button onClick={handleButtonClick}>Pay 200$</button>
+        </div>
+      </div>
+    </Elements>
   );
 }
+
+const cardInfo = {
+  id: "pm_1QrbTXA5DKgBKLrPOrE1mRNX",
+  object: "payment_method",
+  allow_redisplay: "unspecified",
+  billing_details: {
+    address: {
+      city: null,
+      country: null,
+      line1: null,
+      line2: null,
+      postal_code: null,
+      state: null,
+    },
+    email: null,
+    name: "Rupom",
+    phone: null,
+  },
+  card: {
+    brand: "visa",
+    checks: {
+      address_line1_check: null,
+      address_postal_code_check: null,
+      cvc_check: "pass",
+    },
+    country: "US",
+    display_brand: "visa",
+    exp_month: 10,
+    exp_year: 2028,
+    fingerprint: "04OU1Y1XQWVAMUZF",
+    funding: "credit",
+    generated_from: null,
+    last4: "4242",
+    networks: {
+      available: ["visa"],
+      preferred: null,
+    },
+    regulated_status: "unregulated",
+    three_d_secure_usage: {
+      supported: true,
+    },
+    wallet: null,
+  },
+  created: 1739349559,
+  customer: "cus_RkJUwWcMkVvtaL",
+  livemode: false,
+  metadata: {},
+  type: "card",
+};
